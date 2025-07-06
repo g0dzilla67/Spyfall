@@ -1,3 +1,45 @@
+body {
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.title {
+  margin-bottom: 1.5rem;
+}
+
+.btn-custom {
+  background-color: #1f1f1f;
+  border: 1px solid #ffffff33;
+  color: white;
+  margin: 10px;
+  transition: all 0.3s;
+  padding: 15px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-custom:hover {
+  background-color: #2e2e2e;
+  border-color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+#roleDisplay {
+  font-size: 1.8rem;
+  margin-top: 30px;
+}
+
+input[type=number] {
+  width: 80px;
+  padding: 5px;
+}
+
 #countdown {
   font-size: 3rem;
   margin: 20px auto;
