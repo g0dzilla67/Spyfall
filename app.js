@@ -28,6 +28,7 @@ let countdownInterval = null;
 
 const startBtn = document.getElementById('startBtn');
 const revealBtn = document.getElementById('revealBtn');
+const restartBtn = document.getElementById('restartBtn');
 const setupDiv = document.getElementById('setup');
 const gameDiv = document.getElementById('game');
 const playerTitle = document.getElementById('playerTitle');
@@ -35,9 +36,11 @@ const roleDisplay = document.getElementById('roleDisplay');
 const gameInfo = document.getElementById('gameInfo');
 const countdown = document.getElementById('countdown');
 const startInfo = document.getElementById('startInfo');
+const funModeCheckbox = document.getElementById('funMode');
 
 startBtn.addEventListener('click', startGame);
 revealBtn.addEventListener('click', revealRole);
+restartBtn.addEventListener('click', () => location.reload());
 
 function startGame() {
   const playerCount = parseInt(document.getElementById('playerCount').value);
@@ -62,6 +65,8 @@ function startGame() {
   setupDiv.classList.add('hidden');
   gameDiv.classList.remove('hidden');
   gameInfo.classList.add('hidden');
+  revealBtn.style.display = 'inline-block';
+  playerTitle.style.display = 'block';
   updatePlayerTitle();
 }
 
@@ -96,8 +101,8 @@ function startRound() {
   const firstPlayer = validPlayers[Math.floor(Math.random() * validPlayers.length)];
 
   gameInfo.classList.remove('hidden');
-  startInfo.innerText = `Le joueur ${firstPlayer + 1} commence !`;
-
+  startInfo.innerText = `🎲 Le joueur ${firstPlayer + 1} commence !`;
+  restartBtn.classList.add('hidden');
   startCountdown(duration);
 }
 
@@ -112,11 +117,13 @@ function startCountdown(seconds) {
     if (remaining <= 0) {
       clearInterval(countdownInterval);
       countdown.innerText = "⏱ Temps écoulé ! Votez maintenant.";
-      window.navigator.vibrate?.(500);
+      restartBtn.classList.remove('hidden');
+      try {
+        window.navigator.vibrate?.(500);
+      } catch (e) {}
     }
   }, 1000);
 }
-
 
 function formatTime(s) {
   const min = Math.floor(s / 60);
