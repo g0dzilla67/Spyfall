@@ -117,6 +117,7 @@ function startCountdown(seconds) {
   }, 1000);
 }
 
+
 function formatTime(s) {
   const min = Math.floor(s / 60);
   const sec = s % 60;
