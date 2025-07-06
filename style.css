@@ -20,6 +20,7 @@ body {
   border-radius: 12px;
   cursor: pointer;
 }
+
 .btn-custom:hover {
   background-color: #2e2e2e;
   border-color: white;
@@ -37,4 +38,10 @@ body {
 input[type=number] {
   width: 80px;
   padding: 5px;
+}
+
+#countdown {
+  font-size: 3rem;
+  margin-top: 20px;
+  color: #00ff88;
 }
