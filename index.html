@@ -16,6 +16,9 @@
     <label>Nombre d’espions :</label>
     <input type="number" id="spyCount" min="1" max="5" value="1" /><br/><br/>
 
+    <label>Durée (en secondes) :</label>
+    <input type="number" id="duration" min="10" value="120" /><br/><br/>
+
     <button class="btn-custom" id="startBtn">Commencer la partie</button>
   </div>
 
@@ -23,6 +26,10 @@
     <h3 id="playerTitle">Joueur 1</h3>
     <button class="btn-custom" id="revealBtn">Afficher mon rôle</button>
     <div id="roleDisplay"></div>
+    <div id="gameInfo" class="hidden">
+      <p id="startInfo"></p>
+      <h2 id="countdown"></h2>
+    </div>
   </div>
 
   <script src="app.js"></script>
