@@ -123,3 +123,9 @@ input[type="checkbox"] {
 .remove-btn:hover {
   color: #ff7f7f;
 }
+
+#funChanceContainer {
+  margin-top: 5px;
+  font-size: 0.95rem;
+  color: #aaa;
+}
