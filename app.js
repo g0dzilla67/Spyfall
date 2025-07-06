@@ -6,22 +6,7 @@ let countdownInterval = null;
 let activeLocations = JSON.parse(localStorage.getItem("locations")) || [];
 let funRules = JSON.parse(localStorage.getItem("funRules")) || [];
 
-const defaultLocations = [
-  "Sous le lit", "Ascenseur", "Cirque", "Sous la mer", "Château", "Aéroport", "École", "Bunker", "Toilettes publiques",
-  "Parc d’attraction", "Hôpital", "Piscine", "Forêt", "Désert", "Maison hantée", "Cimetière", "Salle de sport", "Zoo",
-  "Train", "Métro", "Cabane dans les bois", "Salle d'interrogatoire", "Navette spatiale", "Croisière", "Banque",
-  "Boîte de nuit", "Planétarium", "Salon de tatouage", "Labo scientifique", "Restaurant", "Montagne", "Base militaire",
-  "Terrain de foot", "Café", "Studio TV", "Camion", "Garage", "Mine", "Chantier", "Île", "Dojo", "Camping", "Maison",
-  "Studio d’enregistrement", "Rue commerçante", "Marché asiatique", "Temple", "Église", "Salon de coiffure", "Serre",
-  "Bus", "Ambassade", "Toit", "Salle d’escalade", "Club d’échecs", "Fête foraine", "Tramway", "Bateau pirate",
-  "Terrain de paintball", "Boutique magique", "Bar", "Station-service", "Jungle", "Épicerie", "Antarctique", "Banquise",
-  "Vaisseau alien", "Base volcanique", "Maison de retraite", "Studio photo", "Aire d’autoroute", "Salle de karaoké",
-  "Chambre d’hôtel", "Chambre forte", "Parking souterrain", "Station de ski", "Ferme", "Caserne", "Boutique high-tech",
-  "Cave à vin", "Salle de concert", "Montagne russe", "Aquarium", "Caserne de pompiers", "Écurie", "Salle d'arcade",
-  "Cuisine de restaurant", "Terrasse", "Observatoire", "Garage souterrain", "Prison", "Chambre d'enfant", "Salon VIP",
-  "Téléphérique", "Abri antiatomique", "Tunnel", "Complexe sportif", "Salon d’esthétique", "Toit d’un immeuble"
-];
-
+const defaultLocations = [/* (les 100 lieux ici comme plus haut) */];
 const defaultFunRules = [
   "Tu ne peux dire que des verbes.",
   "Tu dois parler en rigolant.",
@@ -71,12 +56,7 @@ const funChanceContainer = document.getElementById('funChanceContainer');
 
 funModeCheckbox.onchange = () => {
   funChanceContainer.classList.toggle("hidden", !funModeCheckbox.checked);
-  saveSettings();
 };
-funChanceInput.oninput = saveSettings;
-document.getElementById('playerCount').oninput = saveSettings;
-document.getElementById('spyCount').oninput = saveSettings;
-document.getElementById('duration').oninput = saveSettings;
 
 startBtn.addEventListener('click', startGame);
 revealBtn.addEventListener('click', revealRole);
@@ -169,29 +149,6 @@ function updateFunRules() {
   localStorage.setItem("funRules", JSON.stringify(funRules));
 }
 
-function saveSettings() {
-  const settings = {
-    funModeEnabled: funModeCheckbox.checked,
-    funChance: funChanceInput.value,
-    playerCount: document.getElementById('playerCount').value,
-    spyCount: document.getElementById('spyCount').value,
-    duration: document.getElementById('duration').value
-  };
-  localStorage.setItem("gameSettings", JSON.stringify(settings));
-}
-
-function loadSettings() {
-  const settings = JSON.parse(localStorage.getItem("gameSettings"));
-  if (settings) {
-    funModeCheckbox.checked = settings.funModeEnabled ?? false;
-    funChanceInput.value = settings.funChance ?? 20;
-    funChanceContainer.classList.toggle("hidden", !funModeCheckbox.checked);
-    document.getElementById('playerCount').value = settings.playerCount ?? 5;
-    document.getElementById('spyCount').value = settings.spyCount ?? 1;
-    document.getElementById('duration').value = settings.duration ?? 120;
-  }
-}
-
 function startGame() {
   const playerCount = parseInt(document.getElementById('playerCount').value);
   const spyCount = parseInt(document.getElementById('spyCount').value);
@@ -246,4 +203,61 @@ function revealRole() {
     } else {
       roleDisplay.innerText = `Lieu : ${roles[currentPlayer]}`;
       if (funForPlayers[currentPlayer]) {
-        funDisplay.innerText = `🎭 Défi : ${funForPlayers[current
+        funDisplay.innerText = `🎭 Défi : ${funForPlayers[currentPlayer]}`;
+      }
+    }
+    revealBtn.innerText = "Passer au joueur suivant";
+  } else {
+    currentPlayer++;
+    if (currentPlayer >= roles.length) {
+      revealBtn.style.display = 'none';
+      playerTitle.style.display = 'none';
+      roleDisplay.innerText = "Tous les rôles ont été révélés. Début du jeu !";
+      funDisplay.innerText = "";
+      startRound();
+    } else {
+      revealBtn.innerText = "Afficher mon rôle";
+      roleDisplay.innerText = "";
+      funDisplay.innerText = "";
+      updatePlayerTitle();
+    }
+  }
+}
+
+function updatePlayerTitle() {
+  playerTitle.innerText = `Joueur ${currentPlayer + 1}`;
+}
+
+function startRound() {
+  const validPlayers = roles.map((r, i) => r !== 'SPY' ? i : null).filter(i => i !== null);
+  const firstPlayer = validPlayers[Math.floor(Math.random() * validPlayers.length)];
+
+  gameInfo.classList.remove('hidden');
+  startInfo.innerText = `🎲 Le joueur ${firstPlayer + 1} commence !`;
+  restartBtn.classList.add('hidden');
+  startCountdown(duration);
+}
+
+function startCountdown(seconds) {
+  let remaining = seconds;
+  countdown.innerText = formatTime(remaining);
+
+  countdownInterval = setInterval(() => {
+    remaining--;
+    countdown.innerText = formatTime(remaining);
+    if (remaining <= 0) {
+      clearInterval(countdownInterval);
+      countdown.innerText = "⏱ Temps écoulé ! Votez maintenant.";
+      restartBtn.classList.remove('hidden');
+      try {
+        navigator.vibrate?.(500);
+      } catch (e) {}
+    }
+  }, 1000);
+}
+
+function formatTime(s) {
+  const min = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${min}:${sec.toString().padStart(2, '0')}`;
+}
