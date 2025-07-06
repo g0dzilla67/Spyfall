@@ -9,7 +9,6 @@
 <body>
   <h1 class="title">Spyfall - Version Web</h1>
 
-  
   <div id="setup">
     <label>Nombre de joueurs :</label>
     <input type="number" id="playerCount" min="3" max="20" value="5" /><br/><br/>
@@ -20,6 +19,13 @@
     <label>Durée (en secondes) :</label>
     <input type="number" id="duration" min="10" value="120" /><br/><br/>
 
+    <div id="options">
+      <label>
+        <input type="checkbox" id="funMode" />
+        Activer le mode fun (bientôt)
+      </label>
+    </div><br/>
+
     <button class="btn-custom" id="startBtn">Commencer la partie</button>
   </div>
 
@@ -27,9 +33,11 @@
     <h3 id="playerTitle">Joueur 1</h3>
     <button class="btn-custom" id="revealBtn">Afficher mon rôle</button>
     <div id="roleDisplay"></div>
+
     <div id="gameInfo" class="hidden">
       <p id="startInfo"></p>
       <h2 id="countdown"></h2>
+      <button class="btn-restart hidden" id="restartBtn">🔁 Rejouer</button>
     </div>
   </div>
 
