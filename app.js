@@ -6,7 +6,21 @@ let countdownInterval = null;
 let activeLocations = JSON.parse(localStorage.getItem("locations")) || [];
 let funRules = JSON.parse(localStorage.getItem("funRules")) || [];
 
-const defaultLocations = [/* (les 100 lieux ici comme plus haut) */];
+const defaultLocations = [
+  "Banque", "Plage", "Base militaire", "Train", "Avion", "Restaurant", "Hôpital", "École", "Hôtel", "Supermarché",
+  "Bateau de croisière", "Cirque", "Ambassade", "Station spatiale", "Caserne de pompiers", "Cinéma", "Casino", "Prison",
+  "Cathédrale", "Marché", "Chantier", "Zoo", "Parc d’attractions", "Musée", "Station de ski", "Piscine", "Ferme",
+  "Université", "Montagne", "Camping", "Submarine", "Jungle", "Café", "Salon de coiffure", "Galerie d’art", "Bibliothèque",
+  "Château", "Stade", "Garage", "Manoir", "Opéra", "Cimetière", "Monastère", "Pompe à essence", "Quincaillerie",
+  "Boutique de vêtements", "Studio TV", "Station essence", "Parc", "Salle de sport", "Discothèque", "Mairie", "Crèche",
+  "Garderie", "Salle de concert", "Aéroport", "Forêt", "Cabane", "Salle informatique", "Bureau", "Salle de jeux vidéo",
+  "Dojo", "Salle d’escalade", "Animalerie", "Salle de danse", "Garage automobile", "Caserne militaire", "Montagne russe",
+  "Salon de tatouage", "Salle de réunion", "Salle de classe", "Salle de réception", "Salle d’attente", "Laboratoire",
+  "Ranch", "Usine", "Champ de bataille", "Plage nudiste", "Fête foraine", "Église", "Mosquée", "Synagogue", "Temple",
+  "Orphelinat", "Maison hantée", "Salle de boxe", "Salle des fêtes", "Patinoire", "Terrain de foot", "Terrain de basket",
+  "Terrain de tennis", "Terrasse", "Boulangerie", "Fromagerie", "Pizzeria", "Bar", "Brasserie", "Vignoble", "Cave à vin",
+  "Aquarium", "Planétarium"
+];
 const defaultFunRules = [
   "Tu ne peux dire que des verbes.",
   "Tu dois parler en rigolant.",
@@ -54,8 +68,40 @@ const funModeCheckbox = document.getElementById('funMode');
 const funChanceInput = document.getElementById('funChance');
 const funChanceContainer = document.getElementById('funChanceContainer');
 
+// --- Patch localStorage : restauration ---
+if (localStorage.getItem('funMode') !== null) {
+  funModeCheckbox.checked = localStorage.getItem('funMode') === 'true';
+  funChanceContainer.classList.toggle("hidden", !funModeCheckbox.checked);
+}
+if (localStorage.getItem('funChance')) {
+  funChanceInput.value = localStorage.getItem('funChance');
+}
+if (localStorage.getItem('playerCount')) {
+  document.getElementById('playerCount').value = localStorage.getItem('playerCount');
+}
+if (localStorage.getItem('spyCount')) {
+  document.getElementById('spyCount').value = localStorage.getItem('spyCount');
+}
+if (localStorage.getItem('duration')) {
+  document.getElementById('duration').value = localStorage.getItem('duration');
+}
+
+// --- Patch localStorage : sauvegarde auto ---
 funModeCheckbox.onchange = () => {
   funChanceContainer.classList.toggle("hidden", !funModeCheckbox.checked);
+  localStorage.setItem('funMode', funModeCheckbox.checked);
+};
+funChanceInput.oninput = () => {
+  localStorage.setItem('funChance', funChanceInput.value);
+};
+document.getElementById('playerCount').oninput = (e) => {
+  localStorage.setItem('playerCount', e.target.value);
+};
+document.getElementById('spyCount').oninput = (e) => {
+  localStorage.setItem('spyCount', e.target.value);
+};
+document.getElementById('duration').oninput = (e) => {
+  localStorage.setItem('duration', e.target.value);
 };
 
 startBtn.addEventListener('click', startGame);
