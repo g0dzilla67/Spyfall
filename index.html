@@ -1,24 +1,30 @@
-// Fichier: index.html
-
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spyfall Web App</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1 class="title">Spyfall - Version Web</h1>
+
   <div id="setup">
     <label>Nombre de joueurs :</label>
-    <input type="number" id="playerCount" min="3" max="20" value="5"><br><br><label>Nombre de spies :</label>
-<input type="number" id="spyCount" min="1" max="5" value="1"><br><br>
+    <input type="number" id="playerCount" min="3" max="20" value="5" /><br/><br/>
 
-<button class="btn-custom" id="startBtn">Commencer la partie</button>
+    <label>Nombre d’espions :</label>
+    <input type="number" id="spyCount" min="1" max="5" value="1" /><br/><br/>
 
-  </div>  <div id="game" class="hidden">
+    <button class="btn-custom" id="startBtn">Commencer la partie</button>
+  </div>
+
+  <div id="game" class="hidden">
     <h3 id="playerTitle">Joueur 1</h3>
     <button class="btn-custom" id="revealBtn">Afficher mon rôle</button>
     <div id="roleDisplay"></div>
-  </div>  <script src="app.js"></script></body>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
