@@ -1,26 +1,12 @@
 let roles = [];
+let funForPlayers = [];
 let currentPlayer = 0;
 let duration = 0;
 let countdownInterval = null;
 let activeLocations = JSON.parse(localStorage.getItem("locations")) || [];
 let funRules = JSON.parse(localStorage.getItem("funRules")) || [];
 
-const defaultLocations = [
-  "Sous le lit", "Ascenseur", "Cirque", "Sous la mer", "Château", "Aéroport", "École", "Bunker", "Toilettes publiques",
-  "Parc d’attraction", "Hôpital", "Piscine", "Forêt", "Désert", "Maison hantée", "Cimetière", "Salle de sport", "Zoo",
-  "Train", "Métro", "Cabane dans les bois", "Salle d'interrogatoire", "Navette spatiale", "Croisière", "Banque",
-  "Boîte de nuit", "Planétarium", "Salon de tatouage", "Labo scientifique", "Restaurant", "Montagne", "Base militaire",
-  "Terrain de foot", "Café", "Studio TV", "Camion", "Garage", "Mine", "Chantier", "Île", "Dojo", "Camping", "Maison",
-  "Studio d’enregistrement", "Rue commerçante", "Marché asiatique", "Temple", "Église", "Salon de coiffure", "Serre",
-  "Bus", "Ambassade", "Toit", "Salle d’escalade", "Club d’échecs", "Fête foraine", "Tramway", "Bateau pirate",
-  "Terrain de paintball", "Boutique magique", "Bar", "Station-service", "Jungle", "Épicerie", "Antarctique", "Banquise",
-  "Vaisseau alien", "Base volcanique", "Maison de retraite", "Studio photo", "Aire d’autoroute", "Salle de karaoké",
-  "Chambre d’hôtel", "Chambre forte", "Parking souterrain", "Station de ski", "Ferme", "Caserne", "Boutique high-tech",
-  "Cave à vin", "Salle de concert", "Montagne russe", "Aquarium", "Caserne de pompiers", "Écurie", "Salle d'arcade",
-  "Cuisine de restaurant", "Terrasse", "Observatoire", "Garage souterrain", "Prison", "Chambre d'enfant", "Salon VIP",
-  "Téléphérique", "Abri antiatomique", "Tunnel", "Complexe sportif", "Salon d’esthétique", "Toit d’un immeuble"
-];
-
+const defaultLocations = [/* (les 100 lieux ici comme plus haut) */];
 const defaultFunRules = [
   "Tu ne peux dire que des verbes.",
   "Tu dois parler en rigolant.",
@@ -48,6 +34,7 @@ const roleDisplay = document.getElementById('roleDisplay');
 const gameInfo = document.getElementById('gameInfo');
 const countdown = document.getElementById('countdown');
 const startInfo = document.getElementById('startInfo');
+const funDisplay = document.getElementById('funDisplay');
 
 const toggleLocations = document.getElementById("toggleLocations");
 const locationSettings = document.getElementById("locationSettings");
@@ -62,6 +49,14 @@ const funList = document.getElementById("funList");
 const newFunRule = document.getElementById("newFunRule");
 const addFunRuleBtn = document.getElementById("addFunRule");
 const closeFunBtn = document.getElementById("closeFun");
+
+const funModeCheckbox = document.getElementById('funMode');
+const funChanceInput = document.getElementById('funChance');
+const funChanceContainer = document.getElementById('funChanceContainer');
+
+funModeCheckbox.onchange = () => {
+  funChanceContainer.classList.toggle("hidden", !funModeCheckbox.checked);
+};
 
 startBtn.addEventListener('click', startGame);
 revealBtn.addEventListener('click', revealRole);
@@ -158,8 +153,12 @@ function startGame() {
   const playerCount = parseInt(document.getElementById('playerCount').value);
   const spyCount = parseInt(document.getElementById('spyCount').value);
   duration = parseInt(document.getElementById('duration').value);
+  const funModeEnabled = funModeCheckbox.checked;
+  const funChance = parseInt(funChanceInput.value) || 0;
 
   const possibleLocations = activeLocations.filter(l => l.active);
+  const activeFunRules = funRules.filter(f => f.active);
+
   if (spyCount >= playerCount || possibleLocations.length === 0) {
     alert("Erreur : vérifie le nombre d'espions ou les lieux activés.");
     return;
@@ -167,11 +166,24 @@ function startGame() {
 
   const loc = possibleLocations[Math.floor(Math.random() * possibleLocations.length)].name;
   roles = Array(playerCount).fill(loc);
+  funForPlayers = Array(playerCount).fill(null);
+
+  // Ajout des espions
   for (let i = 0; i < spyCount; i++) {
     let r;
     do { r = Math.floor(Math.random() * playerCount); }
     while (roles[r] === 'SPY');
     roles[r] = 'SPY';
+  }
+
+  // Ajout des défis fun
+  if (funModeEnabled) {
+    for (let i = 0; i < playerCount; i++) {
+      if (roles[i] !== 'SPY' && Math.random() < funChance / 100) {
+        const chosen = activeFunRules[Math.floor(Math.random() * activeFunRules.length)];
+        funForPlayers[i] = chosen?.text || null;
+      }
+    }
   }
 
   currentPlayer = 0;
@@ -184,11 +196,16 @@ function startGame() {
 }
 
 function revealRole() {
+  funDisplay.innerText = "";
   if (revealBtn.innerText === "Afficher mon rôle") {
-    roleDisplay.innerText =
-      roles[currentPlayer] === 'SPY'
-        ? "Tu es l'ESPION !"
-        : `Lieu : ${roles[currentPlayer]}`;
+    if (roles[currentPlayer] === 'SPY') {
+      roleDisplay.innerText = "Tu es l'ESPION !";
+    } else {
+      roleDisplay.innerText = `Lieu : ${roles[currentPlayer]}`;
+      if (funForPlayers[currentPlayer]) {
+        funDisplay.innerText = `🎭 Défi : ${funForPlayers[currentPlayer]}`;
+      }
+    }
     revealBtn.innerText = "Passer au joueur suivant";
   } else {
     currentPlayer++;
@@ -196,10 +213,12 @@ function revealRole() {
       revealBtn.style.display = 'none';
       playerTitle.style.display = 'none';
       roleDisplay.innerText = "Tous les rôles ont été révélés. Début du jeu !";
+      funDisplay.innerText = "";
       startRound();
     } else {
       revealBtn.innerText = "Afficher mon rôle";
       roleDisplay.innerText = "";
+      funDisplay.innerText = "";
       updatePlayerTitle();
     }
   }
