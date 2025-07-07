@@ -67,6 +67,7 @@ const closeFunBtn = document.getElementById("closeFun");
 const funModeCheckbox = document.getElementById('funMode');
 const funChanceInput = document.getElementById('funChance');
 const funChanceContainer = document.getElementById('funChanceContainer');
+const importExportDiv = document.getElementById('importExport');
 
 // --- Patch localStorage : restauration ---
 if (localStorage.getItem('funMode') !== null) {
@@ -169,11 +170,11 @@ function renderFunList() {
   });
 }
 
-function toggleLoc(i) {
+window.toggleLoc = function(i) {
   activeLocations[i].active = !activeLocations[i].active;
   updateLocations();
 }
-function removeLoc(i) {
+window.removeLoc = function(i) {
   activeLocations.splice(i, 1);
   updateLocations();
   renderLocationList();
@@ -182,11 +183,11 @@ function updateLocations() {
   localStorage.setItem("locations", JSON.stringify(activeLocations));
 }
 
-function toggleFunRule(i) {
+window.toggleFunRule = function(i) {
   funRules[i].active = !funRules[i].active;
   updateFunRules();
 }
-function removeFunRule(i) {
+window.removeFunRule = function(i) {
   funRules.splice(i, 1);
   updateFunRules();
   renderFunList();
@@ -238,6 +239,7 @@ function startGame() {
   gameInfo.classList.add('hidden');
   revealBtn.style.display = 'inline-block';
   playerTitle.style.display = 'block';
+  importExportDiv.classList.add('hidden');
   updatePlayerTitle();
 }
 
