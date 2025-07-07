@@ -307,3 +307,43 @@ function formatTime(s) {
   const sec = s % 60;
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
+
+
+// --- Import / Export JSON boutons ---
+const exportDataBtn = document.getElementById("exportDataBtn");
+const importDataBtn = document.getElementById("importDataBtn");
+
+exportDataBtn.onclick = () => {
+  const data = {
+    locations: activeLocations,
+    funRules: funRules
+  };
+  const json = JSON.stringify(data, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    alert("📋 Données copiées dans le presse-papiers !");
+  }).catch(() => {
+    alert("❌ Impossible de copier dans le presse-papiers.");
+  });
+};
+
+importDataBtn.onclick = () => {
+  const input = prompt("Collez ici les données JSON à importer :");
+  if (!input) return;
+
+  try {
+    const data = JSON.parse(input);
+
+    if (!Array.isArray(data.locations) || !Array.isArray(data.funRules)) {
+      throw new Error("Format invalide.");
+    }
+
+    activeLocations = data.locations;
+    funRules = data.funRules;
+    updateLocations();
+    updateFunRules();
+
+    alert("✅ Données importées avec succès !");
+  } catch (e) {
+    alert("❌ Erreur d'importation : Données invalides.");
+  }
+};
