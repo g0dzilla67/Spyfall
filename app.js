@@ -308,35 +308,72 @@ function formatTime(s) {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
+// ========== IMPORT/EXPORT JSON PAR FICHIER (.json) ==========
 
-importDataBtn.onclick = () => {
-  const input = prompt("Collez ici les données JSON à importer :");
-  if (!input) return;
+// Création de l'input invisible pour l'import
+let hiddenImportInput = document.createElement('input');
+hiddenImportInput.type = 'file';
+hiddenImportInput.accept = '.json';
+hiddenImportInput.style.display = 'none';
+document.body.appendChild(hiddenImportInput);
 
-  try {
-    const data = JSON.parse(input);
+document.getElementById('importDataBtn').onclick = () => {
+  hiddenImportInput.value = ''; // reset
+  hiddenImportInput.click();
+};
 
-    if (!Array.isArray(data.locations) || !Array.isArray(data.funRules)) {
-      throw new Error("Format invalide.");
+hiddenImportInput.onchange = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      if (!Array.isArray(data.locations) || !Array.isArray(data.funRules)) {
+        throw new Error("Format invalide.");
+      }
+
+      // Nettoyer les locations
+      activeLocations = data.locations.map(loc => ({
+        name: loc.name || "Lieu inconnu",
+        active: typeof loc.active === "boolean" ? loc.active : true
+      }));
+
+      // Nettoyer les funRules
+      funRules = data.funRules.map(rule => ({
+        text: rule.text || "Règle inconnue",
+        active: typeof rule.active === "boolean" ? rule.active : true
+      }));
+
+      updateLocations();
+      updateFunRules();
+
+      alert("✅ Données importées avec succès !");
+    } catch (e) {
+      alert("❌ Erreur d'importation : Données invalides.");
     }
+  };
+  reader.readAsText(file, 'utf-8');
+};
 
-    // Nettoyer les locations : garder uniquement name et active (bool)
-    activeLocations = data.locations.map(loc => ({
-      name: loc.name || "Lieu inconnu",
-      active: typeof loc.active === "boolean" ? loc.active : true
-    }));
+document.getElementById('exportDataBtn').onclick = () => {
+  const data = {
+    locations: activeLocations,
+    funRules: funRules
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
 
-    // Nettoyer les funRules : garder uniquement text et active (bool)
-    funRules = data.funRules.map(rule => ({
-      text: rule.text || "Règle inconnue",
-      active: typeof rule.active === "boolean" ? rule.active : true
-    }));
-
-    updateLocations();
-    updateFunRules();
-
-    alert("✅ Données importées avec succès !");
-  } catch (e) {
-    alert("❌ Erreur d'importation : Données invalides.");
-  }
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'spyfall-data.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
 };
