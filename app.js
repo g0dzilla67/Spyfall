@@ -309,23 +309,6 @@ function formatTime(s) {
 }
 
 
-// --- Import / Export JSON boutons ---
-const exportDataBtn = document.getElementById("exportDataBtn");
-const importDataBtn = document.getElementById("importDataBtn");
-
-exportDataBtn.onclick = () => {
-  const data = {
-    locations: activeLocations,
-    funRules: funRules
-  };
-  const json = JSON.stringify(data, null, 2);
-  navigator.clipboard.writeText(json).then(() => {
-    alert("📋 Données copiées dans le presse-papiers !");
-  }).catch(() => {
-    alert("❌ Impossible de copier dans le presse-papiers.");
-  });
-};
-
 importDataBtn.onclick = () => {
   const input = prompt("Collez ici les données JSON à importer :");
   if (!input) return;
@@ -337,8 +320,18 @@ importDataBtn.onclick = () => {
       throw new Error("Format invalide.");
     }
 
-    activeLocations = data.locations;
-    funRules = data.funRules;
+    // Nettoyer les locations : garder uniquement name et active (bool)
+    activeLocations = data.locations.map(loc => ({
+      name: loc.name || "Lieu inconnu",
+      active: typeof loc.active === "boolean" ? loc.active : true
+    }));
+
+    // Nettoyer les funRules : garder uniquement text et active (bool)
+    funRules = data.funRules.map(rule => ({
+      text: rule.text || "Règle inconnue",
+      active: typeof rule.active === "boolean" ? rule.active : true
+    }));
+
     updateLocations();
     updateFunRules();
 
