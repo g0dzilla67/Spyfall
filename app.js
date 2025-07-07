@@ -337,8 +337,18 @@ importDataBtn.onclick = () => {
       throw new Error("Format invalide.");
     }
 
-    activeLocations = data.locations;
-    funRules = data.funRules;
+    // Nettoyer les locations : garder uniquement name et active (bool)
+    activeLocations = data.locations.map(loc => ({
+      name: loc.name || "Lieu inconnu",
+      active: typeof loc.active === "boolean" ? loc.active : true
+    }));
+
+    // Nettoyer les funRules : garder uniquement text et active (bool)
+    funRules = data.funRules.map(rule => ({
+      text: rule.text || "Règle inconnue",
+      active: typeof rule.active === "boolean" ? rule.active : true
+    }));
+
     updateLocations();
     updateFunRules();
 
